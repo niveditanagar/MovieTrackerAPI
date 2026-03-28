@@ -10,7 +10,8 @@ const movieSchema = new Schema({
     actors: { type: String },
     language: { type: String },
     imdbRating: { type: String },
-    runtime: { type: String }
+    runtime: { type: String },
+    watched: {type: Boolean, default: false}
 });
 
 module.exports = model('Movie', movieSchema, 'movies');
