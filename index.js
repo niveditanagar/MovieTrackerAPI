@@ -61,7 +61,7 @@ app.get('/movies', async (req, res) =>{
 //     }
 // });
 
-app.delete('/movies/:id', async (req, res) => {
+app.delete('/movies/:imdbID', async (req, res) => {
     
     try {
         const { imdbID } = req.params;
@@ -98,7 +98,7 @@ app.get('/movies/search', async (req, res) => {
     }
 });
 
-app.post('/watchlist', async (req, res) => {
+app.post('/movies/watchlist', async (req, res) => {
     const imdbID = req.body.imdbID;
     console.log("imdbID: ", imdbID);
 
@@ -138,7 +138,7 @@ app.post('/watchlist', async (req, res) => {
    }
 });
 
-app.patch('/watched/:imdbID', async (req, res) => {
+app.patch('/movies/watched/:imdbID', async (req, res) => {
     try {
         const { imdbID } = req.params;
 
