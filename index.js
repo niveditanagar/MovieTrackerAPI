@@ -2,8 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const axios = require('axios');
-const crypto = require('crypto');
-const { watch } = require('fs');
 
 const Movie = require('./models/Movie');
 
@@ -12,21 +10,21 @@ const app = express();
 app.use(express.json());
 
 // Connectiion to MongoDB
-mongoose.connect('mongodb://localhost:27017/movieTracker')
+mongoose
+    .connect('mongodb://localhost:27017/movieTracker')
     .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('Could not connect to MongoDB', err));
+    .catch((err) => console.error('Could not connect to MongoDB', err));
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });
 
-app.get('/movies', async (req, res) =>{
+app.get('/movies', async (req, res) => {
     const movies = await Movie.find();
     res.status(200).json(movies);
 });
 
 app.delete('/movies/:imdbID', async (req, res) => {
-    
     try {
         const { imdbID } = req.params;
         const deleteMovie = await Movie.findOneAndDelete({ imdbID: imdbID });
@@ -58,26 +56,50 @@ app.get('/movies/search', async (req, res) => {
         res.status(200).json(response.data.Search);
     } catch (error) {
         console.error('Error when searching for a movie: ', error);
-        res.status(400).json({ message: `An error occured while searching: ${error}`});
+        res.status(400).json({
+            message: `An error occured while searching: ${error}`
+        });
     }
 });
 
 app.post('/movies/watchlist', async (req, res) => {
     const imdbID = req.body.imdbID;
-    console.log("imdbID: ", imdbID);
+    console.log('imdbID: ', imdbID);
 
-   try {
+    try {
         const response = await axios.get('https://www.omdbapi.com/', {
             params: {
                 i: imdbID,
                 apiKey: process.env.OMDB_API_KEY
             }
-        })
-        
-        // Getting the information of the movie from the response
-        const { Title, Year, Genre, Rated, Director, Actors, Language, imdbRating, Runtime } = response.data;
+        });
 
-        console.log('Movie details fetched from OMDB API:', { imdbID, Title, Year, Genre, Rated, Director, Actors, Language, imdbRating, Runtime, watched: false });
+        // Getting the information of the movie from the response
+        const {
+            Title,
+            Year,
+            Genre,
+            Rated,
+            Director,
+            Actors,
+            Language,
+            imdbRating,
+            Runtime
+        } = response.data;
+
+        console.log('Movie details fetched from OMDB API:', {
+            imdbID,
+            Title,
+            Year,
+            Genre,
+            Rated,
+            Director,
+            Actors,
+            Language,
+            imdbRating,
+            Runtime,
+            watched: false
+        });
 
         // Adding movie to the database
         const newMovie = new Movie({
@@ -88,18 +110,20 @@ app.post('/movies/watchlist', async (req, res) => {
             rated: Rated,
             director: Director,
             actors: Actors,
-            language: Language, 
+            language: Language,
             imdbRating: imdbRating,
             runtime: Runtime,
             watched: false
-        })
+        });
 
         await newMovie.save();
         res.status(201).json({ message: 'Movie added successfully' });
-   } catch (error) {
+    } catch (error) {
         console.error('Error when fetching movie details: ', error);
-        res.status(400).json({ message: 'Error occured while fetching movie details.' });
-   }
+        res.status(400).json({
+            message: 'Error occured while fetching movie details.'
+        });
+    }
 });
 
 app.patch('/movies/watched/:imdbID', async (req, res) => {
@@ -123,6 +147,8 @@ app.patch('/movies/watched/:imdbID', async (req, res) => {
         res.status(200).json({ updatedMovie });
     } catch (error) {
         console.error('Error when updating movie: ', error);
-        res.status(400).json({ message: 'Error occured while updating movie.' });
+        res.status(400).json({
+            message: 'Error occured while updating movie.'
+        });
     }
-})
+});

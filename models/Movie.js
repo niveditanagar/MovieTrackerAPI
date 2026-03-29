@@ -11,7 +11,7 @@ const movieSchema = new Schema({
     language: { type: String },
     imdbRating: { type: String },
     runtime: { type: String },
-    watched: {type: Boolean, default: false}
+    watched: { type: Boolean, default: false }
 });
 
 module.exports = model('Movie', movieSchema, 'movies');
