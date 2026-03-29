@@ -2,9 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const axios = require('axios');
-const Movie = require('./models/Movie');
 const crypto = require('crypto');
 const { watch } = require('fs');
+
+const Movie = require('./models/Movie');
 
 // Middleware to parse JSON
 const app = express();
@@ -22,44 +23,7 @@ app.listen(3000, () => {
 app.get('/movies', async (req, res) =>{
     const movies = await Movie.find();
     res.status(200).json(movies);
-    //res.status(200).json({ message: 'Welcome to the Movie Tracker API!' });
 });
-
-// app.post('/movies', async (req, res) => {
-//     console.log('Received request to add movie:', req.body);
-//     try {
-//         const { imdbID, title, year, genre, rated, director, actors, language, imdbRating, runtime } = req.body;
-
-//         // Check if the movie already exists in the database
-//         const doesMovieExist = await Movie.findOne({ imdbID });
-//         if (doesMovieExist) {
-//             return res.status(400).json('Movie already exists in the database.');
-//         }
-
-//         // Adding movie to the database
-//         const newMovie = new Movie({
-//             imdbID: imdbID,
-//             title: title,
-//             year: year,
-//             genre: genre,
-//             rated: rated,
-//             director: director,
-//             actors: actors,
-//             language: language,
-//             imdbRating: imdbRating,
-//             runtime: runtime
-//         })
-
-//         console.log('Added movie to the database:', newMovie);
-
-//         await newMovie.save();
-//         res.status(201).json({ message: 'Movie added successfully!' });
-
-//     } catch (error) {
-//         console.error('Error adding movie:', error);
-//         res.status(500).json({ message: 'An error occurred while adding the movie.' });
-//     }
-// });
 
 app.delete('/movies/:imdbID', async (req, res) => {
     
@@ -70,9 +34,9 @@ app.delete('/movies/:imdbID', async (req, res) => {
             return res.status(404).json({ message: 'Movie not found.' });
         }
         res.status(200).json({ message: 'Movie deleted successfully!' });
-
     } catch (error) {
         console.error('Error deleting movie:', error);
+        // TODO: Return response to caller
     }
 });
 
@@ -157,7 +121,6 @@ app.patch('/movies/watched/:imdbID', async (req, res) => {
         }
 
         res.status(200).json({ updatedMovie });
-
     } catch (error) {
         console.error('Error when updating movie: ', error);
         res.status(400).json({ message: 'Error occured while updating movie.' });
