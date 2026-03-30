@@ -34,7 +34,9 @@ app.delete('/movies/:imdbID', async (req, res) => {
         res.status(200).json({ message: 'Movie deleted successfully!' });
     } catch (error) {
         console.error('Error deleting movie:', error);
-        // TODO: Return response to caller
+        res.status(400).json({
+            message: 'An error occured while deleting movie'
+        })
     }
 });
 
